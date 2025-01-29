@@ -113,21 +113,27 @@ def getdate(
 	"""
 	if not string_date:
 		return get_datetime().date()
-	if isinstance(string_date, datetime.datetime):
+	elif isinstance(string_date, datetime.datetime):
 		return string_date.date()
 
 	elif isinstance(string_date, datetime.date):
 		return string_date
 
-	if is_invalid_date_string(string_date):
+	elif is_invalid_date_string(string_date):
 		return None
+
 	try:
-		return parser.parse(string_date, dayfirst=parse_day_first).date()
-	except ParserError:
-		frappe.throw(
-			frappe._("{} is not a valid date string.").format(frappe.bold(string_date)),
-			title=frappe._("Invalid Date"),
-		)
+		# PERF: Our DATE_FORMAT is same as ISO format.
+		# fromisoformat is written in C so it's better than using strptime parser
+		return datetime.date.fromisoformat(string_date)
+	except ValueError:
+		try:
+			return parser.parse(string_date, dayfirst=parse_day_first).date()
+		except ParserError:
+			frappe.throw(
+				frappe._("{} is not a valid date string.").format(frappe.bold(string_date)),
+				title=frappe._("Invalid Date"),
+			)
 
 
 def get_datetime(
@@ -162,13 +168,7 @@ def get_datetime(
 	try:
 		# PERF: Our DATETIME_FORMAT is same as ISO format.
 		# fromisoformat is written in C so it's better than using strptime parser
-		dt_object = datetime.datetime.fromisoformat(datetime_str)
-
-		# fromisoformat also adds tzinfo if present in src string,
-		# so we strip it before returning
-		if dt_object.tzinfo:
-			return dt_object.replace(tzinfo=None)
-		return dt_object
+		return datetime.datetime.fromisoformat(datetime_str)
 	except ValueError:
 		return parser.parse(datetime_str)
 
@@ -898,6 +898,21 @@ def get_timespan_date_range(
 	today = getdate()
 
 	match timespan:
+		case "last 7 days":
+			return (
+				add_to_date(today, days=-7),
+				today,
+			)
+		case "last 14 days":
+			return (
+				add_to_date(today, days=-14),
+				today,
+			)
+		case "last 30 days":
+			return (
+				add_to_date(today, days=-30),
+				today,
+			)
 		case "last week":
 			return (
 				get_first_day_of_week(add_to_date(today, days=-7)),
@@ -938,6 +953,21 @@ def get_timespan_date_range(
 			return (get_quarter_start(today), get_quarter_ending(today))
 		case "this year":
 			return (get_year_start(today), get_year_ending(today))
+		case "next 7 days":
+			return (
+				today,
+				add_to_date(today, days=7),
+			)
+		case "next 14 days":
+			return (
+				today,
+				add_to_date(today, days=14),
+			)
+		case "next 30 days":
+			return (
+				today,
+				add_to_date(today, days=30),
+			)
 		case "next week":
 			return (
 				get_first_day_of_week(add_to_date(today, days=7)),
@@ -2597,6 +2627,40 @@ def map_trackers(url_trackers: dict, create: bool = False):
 		frappe_trackers["utm_content"] = url_content
 
 	return frappe_trackers
+
+
+def bold(text: str | int | float) -> str:
+	"""Return `text` wrapped in `<strong>` tags."""
+	return f"<strong>{text}</strong>"
+
+
+def safe_encode(param, encoding="utf-8"):
+	try:
+		param = param.encode(encoding)
+	except Exception:
+		pass
+	return param
+
+
+def safe_decode(param, encoding="utf-8", fallback_map: dict | None = None):
+	"""
+	Method to safely decode data into a string
+
+	:param param: The data to be decoded
+	:param encoding: The encoding to decode into
+	:param fallback_map: A fallback map to reference in case of a LookupError
+	:return:
+	"""
+	try:
+		param = param.decode(encoding)
+	except LookupError:
+		try:
+			param = param.decode((fallback_map or {}).get(encoding, "utf-8"))
+		except Exception:
+			pass
+	except Exception:
+		pass
+	return param
 
 
 # This is used in test to count memory overhead of default imports.
