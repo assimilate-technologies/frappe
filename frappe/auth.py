@@ -38,11 +38,11 @@ class HTTPRequest:
 		# load cookies
 		self.set_cookies()
 
-		# set request language
-		self.set_lang()
-
 		# login and start/resume user session
 		self.set_session()
+
+		# set request language
+		self.set_lang()
 
 		# match csrf token from current session
 		self.validate_csrf_token()
@@ -125,9 +125,6 @@ class LoginManager:
 			if self.login() is False:
 				return
 			self.resume = False
-
-			# run login triggers
-			self.run_trigger("on_session_creation")
 		else:
 			try:
 				self.resume = True
@@ -233,6 +230,8 @@ class LoginManager:
 		self.user = frappe.local.session_obj.user
 		frappe.local.session = frappe.local.session_obj.data
 		self.clear_active_sessions()
+		if not resume:
+			self.run_trigger("on_session_creation")
 
 	def clear_active_sessions(self):
 		"""Clear other sessions of the current user if `deny_multiple_sessions` is not set"""
@@ -639,7 +638,7 @@ def validate_oauth(authorization_header):
 	Authenticate request using OAuth and set session user
 
 	Args:
-			authorization_header (list of str): The 'Authorization' header containing the prefix and token
+	        authorization_header (list of str): The 'Authorization' header containing the prefix and token
 	"""
 
 	from frappe.integrations.oauth2 import get_oauth_server
@@ -679,7 +678,7 @@ def validate_auth_via_api_keys(authorization_header):
 	Authenticate request using API keys and set session user
 
 	Args:
-			authorization_header (list of str): The 'Authorization' header containing the prefix and token
+	        authorization_header (list of str): The 'Authorization' header containing the prefix and token
 	"""
 
 	try:

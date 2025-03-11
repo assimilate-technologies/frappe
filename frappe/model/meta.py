@@ -44,6 +44,7 @@ from frappe.model.workflow import get_workflow_name
 from frappe.modules import load_doctype_module
 from frappe.types import DocRef
 from frappe.utils import cast, cint, cstr
+from frappe.utils.data import add_to_date, get_datetime
 
 DEFAULT_FIELD_LABELS = {
 	"name": _lt("ID"),
@@ -62,7 +63,8 @@ DEFAULT_FIELD_LABELS = {
 # When number of rows in a table exceeds this number, we disable certain features automatically.
 # This is done to avoid hammering the site with unnecessary requests that are just meant for
 # improving UX.
-LARGE_TABLE_THRESHOLD = 100_000
+LARGE_TABLE_SIZE_THRESHOLD = 100_000
+LARGE_TABLE_RECENCY_THRESHOLD = 30  # days
 
 
 def get_meta(doctype: str | dict | DocRef, cached=True) -> "_Meta":
@@ -93,7 +95,7 @@ def get_meta(doctype: str | dict | DocRef, cached=True) -> "_Meta":
 def clear_meta_cache(doctype: str = "*"):
 	key = f"doctype_meta::{doctype}"
 	if doctype == "*":
-		frappe.cache.delete_keys(key)
+		frappe.client_cache.delete_keys(key)
 	else:
 		frappe.client_cache.delete_value(key)
 
@@ -190,7 +192,7 @@ class Meta(Document):
 		self.get_valid_columns()
 		self.set_custom_permissions()
 		self.add_custom_links_and_actions()
-		self.is_large_table = frappe.db.estimate_count(self.name) > LARGE_TABLE_THRESHOLD
+		self.check_if_large_table()
 
 	def as_dict(self, no_nulls=False):
 		def serialize(doc):
@@ -271,10 +273,10 @@ class Meta(Document):
 		return fields
 
 	def get_valid_columns(self) -> list[str]:
-		return self._valid_columns
+		return self._valid_columns_
 
 	@cached_property
-	def _valid_columns(self):
+	def _valid_columns_(self):
 		table_exists = frappe.db.table_exists(self.name)
 		if self.name in self.special_doctypes and table_exists:
 			valid_columns = get_table_columns(self.name)
@@ -304,9 +306,6 @@ class Meta(Document):
 				valid_fields += list(child_table_fields)
 
 		return valid_fields
-
-	def get_table_field_doctype(self, fieldname):
-		return TABLE_DOCTYPES_FOR_DOCTYPE.get(fieldname)
 
 	def get_field(self, fieldname):
 		"""Return docfield from meta."""
@@ -509,6 +508,20 @@ class Meta(Document):
 
 				self.set(fieldname, new_list)
 
+	def check_if_large_table(self):
+		"""Apply some heuristics to detect large tables.
+
+		UI code can use this information to adapt accordingly."""
+		# Note: `modified` should be used in older versions.
+		self.is_large_table = False
+		if self.istable or not frappe.db.table_exists(self.name):  # During install, new migrate
+			return
+
+		if frappe.db.estimate_count(self.name) > LARGE_TABLE_SIZE_THRESHOLD:
+			recent_change = frappe.db.get_value(self.name, {}, "creation", order_by="creation desc")
+			if get_datetime(recent_change) > add_to_date(None, days=-1 * LARGE_TABLE_RECENCY_THRESHOLD):
+				self.is_large_table = True
+
 	def init_field_caches(self):
 		# field map
 		self._fields = {field.fieldname: field for field in self.fields}
@@ -518,6 +531,9 @@ class Meta(Document):
 			self._table_fields = DOCTYPE_TABLE_FIELDS
 		else:
 			self._table_fields = self.get("fields", {"fieldtype": ["in", table_fields]})
+
+		# table fieldname: doctype map
+		self._table_doctypes = {field.fieldname: field.options for field in self._table_fields}
 
 	def sort_fields(self):
 		"""
@@ -944,7 +960,8 @@ def trim_tables(doctype=None, dry_run=False, quiet=False):
 
 
 def trim_table(doctype, dry_run=True):
-	frappe.cache.hdel("table_columns", f"tab{doctype}")
+	key = f"table_columns::tab{doctype}"
+	frappe.cache.delete_value(key)
 	ignore_fields = default_fields + optional_fields + child_table_fields
 	columns = frappe.db.get_table_columns(doctype)
 	fields = frappe.get_meta(doctype, cached=False).get_fieldnames_with_value()
