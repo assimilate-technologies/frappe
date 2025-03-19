@@ -35,18 +35,16 @@ from typing import (
 
 import click
 from werkzeug.datastructures import Headers
-from werkzeug.local import Local, LocalProxy, release_local
 
 import frappe
 from frappe.query_builder.utils import (
 	get_query,
 	get_query_builder,
-	patch_query_aggregation,
-	patch_query_execute,
 )
 from frappe.utils.caching import deprecated_local_cache as local_cache
 from frappe.utils.caching import request_cache
 from frappe.utils.data import as_unicode, bold, cint, cstr, safe_decode, safe_encode, sbool
+from frappe.utils.local import Local, LocalProxy, release_local
 
 # Local application imports
 from .exceptions import *
@@ -68,7 +66,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 	from werkzeug.wrappers import Request
 
-	from frappe.database.mariadb.database import MariaDBDatabase
+	from frappe.database.mariadb.database import MariaDBDatabase as PyMariaDBDatabase
+	from frappe.database.mariadb.mysqlclient import MariaDBDatabase
 	from frappe.database.postgres.database import PostgresDatabase
 	from frappe.email.doctype.email_queue.email_queue import EmailQueue
 	from frappe.model.document import Document
@@ -82,33 +81,11 @@ cache: Optional["RedisWrapper"] = None
 client_cache: Optional["ClientCache"] = None
 STANDARD_USERS = ("Guest", "Administrator")
 
-_one_time_setup: dict[str, bool] = {}
 _dev_server = int(sbool(os.environ.get("DEV_SERVER", False)))
 
 if _dev_server:
 	warnings.simplefilter("always", DeprecationWarning)
 	warnings.simplefilter("always", PendingDeprecationWarning)
-
-
-def _get_local_proxy(self: Local, name: str) -> LocalProxy:
-	"""Get local proxy object by name."""
-
-	_local_contextvar = self._Local__storage
-
-	def _get_current_object() -> Any:
-		obj = _local_contextvar.get(None)
-
-		if obj is not None and name in obj:
-			return obj[name]
-
-		raise RuntimeError("object is not bound") from None
-
-	lp = LocalProxy(_get_current_object)
-	object.__setattr__(lp, "_get_current_object", _get_current_object)
-	return lp
-
-
-Local.__call__ = _get_local_proxy
 
 
 def _(msg: str, lang: str | None = None, context: str | None = None) -> str:
@@ -184,7 +161,7 @@ ResponseDict: TypeAlias = _dict[str, Any]  # type: ignore[no-any-explicit]
 FlagsDict: TypeAlias = _dict[str, Any]  # type: ignore[no-any-explicit]
 FormDict: TypeAlias = _dict[str, str]
 
-db: LocalProxy[Union["MariaDBDatabase", "PostgresDatabase"]] = local("db")
+db: LocalProxy[Union["PyMariaDBDatabase", "MariaDBDatabase", "PostgresDatabase"]] = local("db")
 qb: LocalProxy[Union["MariaDB", "Postgres"]] = local("qb")
 conf: LocalProxy[ConfType] = local("conf")
 form_dict: LocalProxy[FormDict] = local("form_dict")
@@ -205,7 +182,7 @@ lang: LocalProxy[str] = local("lang")
 if TYPE_CHECKING:  # pragma: no cover
 	# trick because some type checkers fail to follow "RedisWrapper", etc (written as string literal)
 	# trough a generic wrapper; seems to be a bug
-	db: MariaDBDatabase | PostgresDatabase
+	db: PyMariaDBDatabase | MariaDBDatabase | PostgresDatabase
 	qb: MariaDB | Postgres
 	conf: ConfType
 	form_dict: FormDict
@@ -284,15 +261,8 @@ def init(site: str, sites_path: str = ".", new_site: bool = False, force: bool =
 	local.session = _dict()
 	local.dev_server = _dev_server
 	local.qb = get_query_builder(local.conf.db_type)
-	local.qb.get_query = get_query
 	if not cache or not client_cache:
 		setup_redis_cache_connection()
-
-	if not _one_time_setup.get(local.conf.db_type):
-		patch_query_execute()
-		patch_query_aggregation()
-		frappe._optimizations.register_fault_handler()
-		_one_time_setup[local.conf.db_type] = True
 
 	setup_module_map(include_all_apps=not (frappe.request or frappe.job or frappe.flags.in_migrate))
 
@@ -318,6 +288,7 @@ def connect(site: str | None = None, db_name: str | None = None, set_admin_as_us
 			"Instead, explicitly invoke frappe.init(site) prior to calling frappe.connect(), if initializing the site is necessary.",
 		)
 		init(site)
+
 	if db_name:
 		from frappe.deprecation_dumpster import deprecation_warning
 
@@ -328,18 +299,24 @@ def connect(site: str | None = None, db_name: str | None = None, set_admin_as_us
 			"Instead, explicitly invoke frappe.init(site) with the right config prior to calling frappe.connect(), if necessary.",
 		)
 
-	assert db_name or local.conf.db_user, "site must be fully initialized, db_user missing"
-	assert db_name or local.conf.db_name, "site must be fully initialized, db_name missing"
-	assert local.conf.db_password, "site must be fully initialized, db_password missing"
+	conf = local.conf
+	db_user = conf.db_user or db_name
+	db_name_ = conf.db_name or db_name
+	db_password = conf.db_password
+
+	assert db_user, "site must be fully initialized, db_user missing"
+	assert db_name_, "site must be fully initialized, db_name missing"
+	assert db_password, "site must be fully initialized, db_password missing"
 
 	local.db = get_db(
-		socket=local.conf.db_socket,
-		host=local.conf.db_host,
-		port=local.conf.db_port,
-		user=local.conf.db_user or db_name,
-		password=local.conf.db_password,
-		cur_db_name=local.conf.db_name or db_name,
+		socket=conf.db_socket,
+		host=conf.db_host,
+		port=conf.db_port,
+		user=db_user,
+		password=db_password,
+		cur_db_name=db_name_,
 	)
+
 	if set_admin_as_user:
 		set_user("Administrator")
 
@@ -431,10 +408,10 @@ def errprint(msg: str) -> None:
 
 
 def print_sql(enable: bool = True) -> None:
-	if frappe.conf.allow_tests and frappe.conf.developer_mode:
-		cache.set_value("flag_print_sql", enable)
-	else:
-		frappe.throw("`frappe.print_sql` only works in `developer_mode` with `allow_tests` enabled on site.")
+	if not local.conf.allow_tests:
+		frappe.throw("`frappe.print_sql` only works with `allow_tests` site config enabled.")
+
+	client_cache.set_value("flag_print_sql", enable)
 
 
 def log(msg: str) -> None:
@@ -2073,6 +2050,12 @@ def validate_and_sanitize_search_inputs(fn):
 	return wrapper
 
 
+def override_whitelisted_method(original_method: str) -> str:
+	"""Return the last override or the original whitelisted method."""
+	overrides = frappe.get_hooks("override_whitelisted_methods", {}).get(original_method, [])
+	return overrides[-1] if overrides else original_method
+
+
 # Backward compatibility
 from frappe.utils.messages import *  # noqa: I001
 
@@ -2086,3 +2069,4 @@ from frappe.utils.error import log_error
 from frappe.utils.print_utils import get_print
 
 frappe._optimizations.optimize_all()
+frappe._optimizations.register_fault_handler()
