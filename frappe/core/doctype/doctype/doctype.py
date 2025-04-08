@@ -154,6 +154,7 @@ class DocType(Document):
 		]
 		nsm_parent_field: DF.Data | None
 		permissions: DF.Table[DocPerm]
+		protect_attached_files: DF.Check
 		queue_in_background: DF.Check
 		quick_entry: DF.Check
 		read_only: DF.Check
@@ -332,7 +333,7 @@ class DocType(Document):
 		if self.is_virtual and self.custom:
 			frappe.throw(_("Not allowed to create custom Virtual DocType."), CannotCreateStandardDoctypeError)
 
-		if frappe.conf.get("developer_mode"):
+		if frappe.conf.developer_mode and not self.owner:
 			self.owner = "Administrator"
 			self.modified_by = "Administrator"
 
@@ -1056,6 +1057,17 @@ class DocType(Document):
 				indicator="yellow",
 			)
 			return True
+
+	@frappe.whitelist()
+	def trim_table(self):
+		from frappe.model.meta import trim_table
+
+		"""Removes database fields that don't exist in the doctype.
+
+		This may be needed as maintenance since removing a field in a DocType
+		doesn't automatically delete the db field.
+		"""
+		trim_table(self.name, dry_run=False)
 
 
 def validate_series(dt, autoname=None, name=None):

@@ -42,7 +42,7 @@ from frappe.query_builder.utils import (
 	get_query_builder,
 )
 from frappe.utils.caching import deprecated_local_cache as local_cache
-from frappe.utils.caching import request_cache
+from frappe.utils.caching import request_cache, site_cache
 from frappe.utils.data import as_unicode, bold, cint, cstr, safe_decode, safe_encode, sbool
 from frappe.utils.local import Local, LocalProxy, release_local
 
@@ -224,7 +224,7 @@ def init(site: str, sites_path: str = ".", new_site: bool = False, force: bool =
 			"read_only": False,
 		}
 	)
-	local.locked_documents: list[Document] = []
+	local.locked_documents = []
 	local.test_objects = defaultdict(list)
 
 	local.site = site
@@ -387,13 +387,6 @@ def setup_redis_cache_connection():
 		if not cache:
 			cache = setup_cache()
 			client_cache = ClientCache()
-
-
-def get_traceback(with_context: bool = False) -> str:
-	"""Return error traceback."""
-	from frappe.utils import get_traceback
-
-	return get_traceback(with_context=with_context)
 
 
 def errprint(msg: str) -> None:
@@ -1011,62 +1004,6 @@ def get_cached_value(
 	return values
 
 
-_SingleDocument: TypeAlias = "Document"
-_NewDocument: TypeAlias = "Document"
-
-
-@overload
-def get_doc(document: "Document", /) -> "Document":
-	pass
-
-
-@overload
-def get_doc(doctype: str, /) -> _SingleDocument:
-	"""Retrieve Single DocType from DB, doctype must be positional argument."""
-	pass
-
-
-@overload
-def get_doc(doctype: str, name: str, /, *, for_update: bool | None = None) -> "Document":
-	"""Retrieve DocType from DB, doctype and name must be positional argument."""
-	pass
-
-
-@overload
-def get_doc(**kwargs: dict) -> "_NewDocument":
-	"""Initialize document from kwargs.
-	Not recommended. Use `frappe.new_doc` instead."""
-	pass
-
-
-@overload
-def get_doc(documentdict: dict) -> "_NewDocument":
-	"""Create document from dict.
-	Not recommended. Use `frappe.new_doc` instead."""
-	pass
-
-
-def get_doc(*args: Any, **kwargs: Any) -> "Document":
-	"""Return a `frappe.model.document.Document` object of the given type and name.
-
-	:param arg1: DocType name as string **or** document JSON.
-	:param arg2: [optional] Document name as string.
-
-	Examples:
-
-	        # insert a new document
-	        todo = frappe.get_doc({"doctype":"ToDo", "description": "test"})
-	        todo.insert()
-
-	        # open an existing document
-	        todo = frappe.get_doc("ToDo", "TD0001")
-
-	"""
-	import frappe.model.document
-
-	return frappe.model.document.get_doc(*args, **kwargs)
-
-
 def get_last_doc(
 	doctype,
 	filters: FilterSignature | None = None,
@@ -1085,13 +1022,6 @@ def get_last_doc(
 def get_single(doctype):
 	"""Return a `frappe.model.document.Document` object of the given Single doctype."""
 	return get_doc(doctype, doctype)
-
-
-def get_meta(doctype, cached=True):
-	"""Get `frappe.model.meta.Meta` instance of given doctype name."""
-	import frappe.model.meta
-
-	return frappe.model.meta.get_meta(doctype, cached=cached)
 
 
 def get_meta_module(doctype):
@@ -1332,7 +1262,6 @@ def get_doc_hooks():
 	return local.doc_events_hooks
 
 
-@request_cache
 def _load_app_hooks(app_name: str | None = None):
 	import types
 
@@ -1359,6 +1288,10 @@ def _load_app_hooks(app_name: str | None = None):
 	return hooks
 
 
+_request_cached_load_app_hooks = request_cache(_load_app_hooks)
+_site_cached_load_app_hooks = site_cache(_load_app_hooks)
+
+
 def get_hooks(
 	hook: str | None = None, default: Any | None = "_KEEP_DEFAULT_LIST", app_name: str | None = None
 ) -> _dict:
@@ -1369,17 +1302,18 @@ def get_hooks(
 	:param app_name: Filter by app."""
 
 	if app_name:
-		hooks = _load_app_hooks(app_name)
+		hooks = _request_cached_load_app_hooks(app_name)
+	elif local.conf.developer_mode:
+		hooks = _site_cached_load_app_hooks()
 	else:
-		if conf.developer_mode:
+		hooks = client_cache.get_value("app_hooks")
+		if hooks is None:
 			hooks = _load_app_hooks()
-		else:
-			hooks = client_cache.get_value("app_hooks")
-			if hooks is None:
-				hooks = _load_app_hooks()
-				client_cache.set_value("app_hooks", hooks)
+			client_cache.set_value("app_hooks", hooks)
+
 	if hook:
 		return hooks.get(hook, ([] if default == "_KEEP_DEFAULT_LIST" else default))
+
 	return _dict(hooks)
 
 
@@ -1412,38 +1346,42 @@ def setup_module_map(include_all_apps: bool = True) -> None:
 	:return: Nothing
 	"""
 	if include_all_apps:
-		local.app_modules = cache.get_value("app_modules")
+		app_modules = cache.get_value("app_modules")
 	else:
-		local.app_modules = client_cache.get_value("installed_app_modules")
+		app_modules = client_cache.get_value("installed_app_modules")
 
-	if not local.app_modules:
-		local.app_modules = {}
+	if not app_modules:
+		app_modules = {}
+
 		if include_all_apps:
 			apps = get_all_apps(with_internal_apps=True)
 		else:
 			apps = get_installed_apps(_ensure_on_bench=True)
 
 		for app in apps:
-			local.app_modules.setdefault(app, [])
+			app_modules.setdefault(app, [])
 			for module in get_module_list(app):
 				module = scrub(module)
-				local.app_modules[app].append(module)
+				app_modules[app].append(module)
 
 		if include_all_apps:
-			cache.set_value("app_modules", local.app_modules)
+			cache.set_value("app_modules", app_modules)
 		else:
-			client_cache.set_value("installed_app_modules", local.app_modules)
+			client_cache.set_value("installed_app_modules", app_modules)
 
 	# Init module_app (reverse mapping)
-	local.module_app = {}
-	for app, modules in local.app_modules.items():
+	module_app = {}
+	for app, modules in app_modules.items():
 		for module in modules:
-			if module in local.module_app:
+			if module in module_app:
 				warnings.warn(
-					f"WARNING: module `{module}` found in apps `{local.module_app[module]}` and `{app}`",
+					f"WARNING: module `{module}` found in apps `{module_app[module]}` and `{app}`",
 					stacklevel=1,
 				)
-			local.module_app[module] = app
+			module_app[module] = app
+
+	local.app_modules = app_modules
+	local.module_app = module_app
 
 
 def get_file_items(path, raise_not_found=False, ignore_empty_lines=True):
@@ -1512,7 +1450,22 @@ def call(fn: str | Callable, *args, **kwargs):
 	return fn(*args, **newargs)
 
 
-_cached_inspect_signature = functools.lru_cache(inspect.signature)
+@functools.lru_cache
+def _get_cached_signature_params(fn: Callable) -> tuple[dict[str, Any], bool]:
+	"""
+	Get cached parameters for a function.
+	Returns a dictionary of parameters and a boolean indicating if the function has **kwargs.
+	"""
+
+	signature = inspect.signature(fn)
+
+	# if function has any **kwargs parameter that capture arbitrary keyword arguments
+	# Ref: https://docs.python.org/3/library/inspect.html#inspect.Parameter.kind
+	variable_kwargs_exist = any(
+		parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in signature.parameters.values()
+	)
+
+	return dict(signature.parameters), variable_kwargs_exist
 
 
 def get_newargs(fn: Callable, kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -1526,23 +1479,12 @@ def get_newargs(fn: Callable, kwargs: dict[str, Any]) -> dict[str, Any]:
 	                {"a": 2}
 	"""
 
-	# if function has any **kwargs parameter that capture arbitrary keyword arguments
-	# Ref: https://docs.python.org/3/library/inspect.html#inspect.Parameter.kind
-	varkw_exist = False
-
-	signature = _cached_inspect_signature(fn)
-	fnargs = list(signature.parameters)
-
-	for param_name, parameter in signature.parameters.items():
-		if parameter.kind == inspect.Parameter.VAR_KEYWORD:
-			varkw_exist = True
-			fnargs.remove(param_name)
-			break
-
-	newargs = {}
-	for a in kwargs:
-		if (a in fnargs) or varkw_exist:
-			newargs[a] = kwargs.get(a)
+	parameters, variable_kwargs_exist = _get_cached_signature_params(fn)
+	newargs = (
+		kwargs.copy()
+		if variable_kwargs_exist
+		else {key: value for key, value in kwargs.items() if key in parameters}
+	)
 
 	# WARNING: This behaviour is now  part of business logic in places, never remove.
 	newargs.pop("ignore_permissions", None)
@@ -1821,7 +1763,7 @@ def get_value(*args, **kwargs):
 	:param as_dict: Return values as dict.
 	:param debug: Print query in error log.
 	"""
-	return db.get_value(*args, **kwargs)
+	return local.db.get_value(*args, **kwargs)
 
 
 def as_json(obj: dict | list, indent=1, separators=None, ensure_ascii=True) -> str:
@@ -1858,26 +1800,6 @@ def are_emails_muted():
 
 
 from frappe.deprecation_dumpster import frappe_get_test_records as get_test_records
-
-
-def format_value(*args, **kwargs):
-	"""Format value with given field properties.
-
-	:param value: Value to be formatted.
-	:param df: (Optional) DocField object with properties `fieldtype`, `options` etc."""
-	import frappe.utils.formatters
-
-	return frappe.utils.formatters.format_value(*args, **kwargs)
-
-
-def format(*args, **kwargs):
-	"""Format value with given field properties.
-
-	:param value: Value to be formatted.
-	:param df: (Optional) DocField object with properties `fieldtype`, `options` etc."""
-	import frappe.utils.formatters
-
-	return frappe.utils.formatters.format_value(*args, **kwargs)
 
 
 def attach_print(
@@ -1933,45 +1855,12 @@ def attach_print(
 	return {"fname": file_name, "fcontent": content}
 
 
-def enqueue(*args, **kwargs):
-	"""
-	Enqueue method to be executed using a background worker
-
-	:param method: method string or method object
-	:param queue: (optional) should be either long, default or short
-	:param timeout: (optional) should be set according to the functions
-	:param event: this is passed to enable clearing of jobs from queues
-	:param is_async: (optional) if is_async=False, the method is executed immediately, else via a worker
-	:param job_name: (optional) can be used to name an enqueue call, which can be used to prevent duplicate calls
-	:param kwargs: keyword arguments to be passed to the method
-	"""
-	import frappe.utils.background_jobs
-
-	return frappe.utils.background_jobs.enqueue(*args, **kwargs)
-
-
 def task(**task_kwargs):
 	def decorator_task(f):
 		f.enqueue = lambda **fun_kwargs: enqueue(f, **task_kwargs, **fun_kwargs)
 		return f
 
 	return decorator_task
-
-
-def enqueue_doc(*args, **kwargs):
-	"""
-	Enqueue method to be executed using a background worker
-
-	:param doctype: DocType of the document on which you want to run the event
-	:param name: Name of the document on which you want to run the event
-	:param method: method string or method object
-	:param queue: (optional) should be either long, default or short
-	:param timeout: (optional) should be set according to the functions
-	:param kwargs: keyword arguments to be passed to the method
-	"""
-	import frappe.utils.background_jobs
-
-	return frappe.utils.background_jobs.enqueue_doc(*args, **kwargs)
 
 
 def get_doctype_app(doctype):
@@ -2063,10 +1952,17 @@ import frappe._optimizations
 from frappe.cache_manager import clear_cache, reset_metadata_version
 from frappe.config import get_common_site_config, get_conf, get_site_config
 from frappe.core.doctype.system_settings.system_settings import get_system_settings
+from frappe.model.document import get_doc
+from frappe.model.meta import get_meta
 from frappe.realtime import publish_progress, publish_realtime
-from frappe.utils import mock, parse_json, safe_eval
+from frappe.utils import get_traceback, mock, parse_json, safe_eval
+from frappe.utils.background_jobs import enqueue, enqueue_doc
 from frappe.utils.error import log_error
+from frappe.utils.formatters import format_value
 from frappe.utils.print_utils import get_print
+
+# for backwards compatibility
+format = format_value
 
 frappe._optimizations.optimize_all()
 frappe._optimizations.register_fault_handler()
