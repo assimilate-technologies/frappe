@@ -89,6 +89,7 @@ def add(args=None, *, ignore_permissions=False):
 					"date": args.get("date", nowdate()),
 					"assigned_by": args.get("assigned_by", frappe.session.user),
 					"assignment_rule": args.get("assignment_rule"),
+     
 				}
 			).insert(ignore_permissions=True)
 

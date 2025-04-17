@@ -84,6 +84,12 @@ frappe.views.InteractionComposer = class InteractionComposer {
 				fieldname: "assigned_to",
 				options: "User",
 			},
+			{
+				label: __("Follow Up Type"),
+				fieldtype: "Link",
+				fieldname: "custom_follow_up_type",
+				options: "Follow Up",
+			},
 			{ fieldtype: "Section Break" },
 			{ label: __("Summary"), fieldtype: "Data", fieldname: "summary" },
 			{ fieldtype: "Section Break" },
@@ -264,7 +270,6 @@ frappe.views.InteractionComposer = class InteractionComposer {
 					if ("assigned_to" in form_values) {
 						me.assign_document(r.message, form_values["assigned_to"]);
 					}
-
 					if (selected_attachments) {
 						me.add_attachments(r.message, selected_attachments);
 					}
@@ -341,6 +346,7 @@ function get_doc_mappings() {
 				category: "event_category",
 				due_date: "starts_on",
 				public: "event_type",
+				custom_follow_up_type: "custom_follow_up_type",
 			},
 			reqd_fields: ["summary", "due_date"],
 			hidden_fields: [],
@@ -353,6 +359,7 @@ function get_doc_mappings() {
 				reference_doctype: "reference_type",
 				reference_document: "reference_name",
 				assigned_to: "allocated_to",
+				custom_follow_up_type: "custom_follow_up_type",
 			},
 			reqd_fields: ["description"],
 			hidden_fields: ["public", "category"],
