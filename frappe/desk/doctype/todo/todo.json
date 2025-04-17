@@ -24,7 +24,8 @@
   "assigned_by",
   "assigned_by_full_name",
   "sender",
-  "assignment_rule"
+  "assignment_rule",
+  "follow_up_type"
  ],
  "fields": [
   {
@@ -52,6 +53,24 @@
    "oldfieldtype": "Data",
    "options": "High\nMedium\nLow"
   },
+    {
+     "fieldname": "follow_up_type",
+     "fieldtype": "Link",
+     "label": "Follow Up Type",
+     "options": "Follow Up",
+     "depentent_on": "eval:doc.reference_type == 'Lead' || doc.reference_type == 'Opportunity'"
+    },
+    {
+     "fieldname": "status_color",
+     "fieldtype": "Color",
+     "label": "Status Color"
+    },
+    {
+     "fieldname": "status_icon",
+     "fieldtype": "Select",
+     "label": "Status Icon",
+     "options": "\nfa fa-check\nfa fa-times\nfa fa-exclamation-triangle"
+    },
   {
    "fieldname": "column_break_2",
    "fieldtype": "Column Break"

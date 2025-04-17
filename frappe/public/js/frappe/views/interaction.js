@@ -87,7 +87,7 @@ frappe.views.InteractionComposer = class InteractionComposer {
 			{
 				label: __("Follow Up Type"),
 				fieldtype: "Link",
-				fieldname: "custom_follow_up_type",
+				fieldname: "follow_up_type",
 				options: "Follow Up",
 			},
 			{ fieldtype: "Section Break" },
@@ -359,7 +359,7 @@ function get_doc_mappings() {
 				reference_doctype: "reference_type",
 				reference_document: "reference_name",
 				assigned_to: "allocated_to",
-				custom_follow_up_type: "custom_follow_up_type",
+				follow_up_type: "follow_up_type",
 			},
 			reqd_fields: ["description"],
 			hidden_fields: ["public", "category"],
