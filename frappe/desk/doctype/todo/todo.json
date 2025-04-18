@@ -58,7 +58,7 @@
      "fieldtype": "Link",
      "label": "Follow Up Type",
      "options": "Follow Up",
-     "depentent_on": "eval:doc.reference_type == 'Lead' || doc.reference_type == 'Opportunity'"
+     "depends_on": "eval:doc.reference_type == 'Lead' || doc.reference_type == 'Opportunity'"
     },
     {
      "fieldname": "status_color",
