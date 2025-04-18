@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:follow_up_type",
  "creation": "2025-04-16 18:00:34.886887",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -20,6 +21,7 @@
  "modified": "2025-04-16 18:00:48.043734",
  "modified_by": "Administrator",
  "module": "Custom",
+ "naming_rule": "By fieldname",
  "name": "Follow Up",
  "owner": "Administrator",
  "permissions": [
