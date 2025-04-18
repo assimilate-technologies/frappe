@@ -142,45 +142,6 @@ def get_doc_from_dict(data: dict[str, Any], **kwargs) -> "Document":
 	raise ImportError(data["doctype"])
 
 
-def read_only_guard(func):
-	"""Decorator to prevent document methods from being called in read-only mode"""
-
-	@wraps(func)
-	def wrapper(self, *args, **kwargs):
-		if getattr(frappe.local, "read_only_depth", 0) > 0:
-			# Allow Error Log inserts even in read-only mode
-			if self.doctype == "Error Log" and func.__name__ == "insert":
-				return func(self, *args, **kwargs)
-			error_msg = f"Cannot call {func.__name__} in read-only document mode"
-			if getattr(frappe.local, "read_only_context", None):
-				error_msg += f" ({frappe.local.read_only_context})"
-			raise frappe.DatabaseModificationError(error_msg)
-		return func(self, *args, **kwargs)
-
-	return wrapper
-
-
-@contextmanager
-def read_only_document(context=None):
-	"""Context manager to prevent document modifications.
-	Uses thread-local state to track read-only mode."""
-	if not hasattr(frappe.local, "read_only_depth"):
-		frappe.local.read_only_depth = 0
-
-	frappe.local.read_only_depth += 1
-	if context:
-		frappe.local.read_only_context = context
-
-	try:
-		yield
-	finally:
-		frappe.local.read_only_depth -= 1
-		if frappe.local.read_only_depth == 0:
-			if hasattr(frappe.local, "read_only_context"):
-				del frappe.local.read_only_context
-			del frappe.local.read_only_depth
-
-
 class Document(BaseDocument, DocRef):
 	"""All controllers inherit from `Document`."""
 
@@ -271,11 +232,14 @@ class Document(BaseDocument, DocRef):
 
 		else:
 			if not is_doctype and isinstance(self.name, str):
+				for_update = ""
+				if self.flags.for_update and frappe.db.db_type != "sqlite":
+					for_update = "FOR UPDATE"
 				# Fast path - use raw SQL to avoid QB/ORM overheads.
 				d = frappe.db.sql(
 					"SELECT * FROM {table_name} WHERE `name` = %s {for_update}".format(
 						table_name=get_table_name(self.doctype, wrap_in_backticks=True),
-						for_update="FOR UPDATE" if self.flags.for_update else "",
+						for_update=for_update,
 					),
 					(self.name),
 					as_dict=True,
@@ -328,6 +292,9 @@ class Document(BaseDocument, DocRef):
 					for_update=self.flags.for_update,
 				)
 			else:
+				for_update = ""
+				if self.flags.for_update and frappe.db.db_type != "sqlite":
+					for_update = "FOR UPDATE"
 				# Fast pass for all other doctypes - using raw SQL
 				children = frappe.db.sql(
 					"""SELECT * FROM {table_name}
@@ -336,7 +303,7 @@ class Document(BaseDocument, DocRef):
 						AND `parentfield`= %(parentfield)s
 					ORDER BY `idx` ASC {for_update}""".format(
 						table_name=get_table_name(child_doctype, wrap_in_backticks=True),
-						for_update="FOR UPDATE" if self.flags.for_update else "",
+						for_update=for_update,
 					),
 					{"parent": self.name, "parenttype": self.doctype, "parentfield": fieldname},
 					as_dict=True,
@@ -395,7 +362,6 @@ class Document(BaseDocument, DocRef):
 		)
 		raise frappe.PermissionError
 
-	@read_only_guard
 	def insert(
 		self,
 		ignore_permissions=None,
@@ -512,12 +478,10 @@ class Document(BaseDocument, DocRef):
 			exc=frappe.DocumentLockedError,
 		)
 
-	@read_only_guard
 	def save(self, *args, **kwargs) -> "Self":
 		"""Wrapper for _save"""
 		return self._save(*args, **kwargs)
 
-	@read_only_guard
 	def _save(self, ignore_permissions=None, ignore_version=None) -> "Self":
 		"""Save the current document in the database in the **DocType**'s table or
 		`tabSingles` (for single types).
@@ -782,7 +746,7 @@ class Document(BaseDocument, DocRef):
 		self._fix_rating_value()
 		self._validate_code_fields()
 		self._sync_autoname_field()
-		self._extract_images_from_editor()
+		self._extract_images_from_text_editor()
 		self._sanitize_content()
 		self._save_passwords()
 		self.validate_workflow()
@@ -795,7 +759,7 @@ class Document(BaseDocument, DocRef):
 			d._fix_rating_value()
 			d._validate_code_fields()
 			d._sync_autoname_field()
-			d._extract_images_from_editor()
+			d._extract_images_from_text_editor()
 			d._sanitize_content()
 			d._save_passwords()
 		if self.is_new():
@@ -1245,13 +1209,11 @@ class Document(BaseDocument, DocRef):
 		self.reload()
 
 	@frappe.whitelist()
-	@read_only_guard
 	def submit(self):
 		"""Submit the document. Sets `docstatus` = 1, then saves."""
 		return self._submit()
 
 	@frappe.whitelist()
-	@read_only_guard
 	def cancel(self):
 		"""Cancel the document. Sets `docstatus` = 2, then saves."""
 		return self._cancel()
@@ -1280,7 +1242,6 @@ class Document(BaseDocument, DocRef):
 		"""Rename the document to `name`. This transforms the current object."""
 		return self._rename(name=name, merge=merge, force=force, validate_rename=validate_rename)
 
-	@read_only_guard
 	def delete(self, ignore_permissions=False, force=False, *, delete_permanently=False):
 		"""Delete document."""
 		return frappe.delete_doc(
@@ -1404,7 +1365,6 @@ class Document(BaseDocument, DocRef):
 			data = {"doctype": self.doctype, "name": self.name, "user": frappe.session.user}
 			frappe.publish_realtime("list_update", data, after_commit=True)
 
-	@read_only_guard
 	def db_set(self, fieldname, value=None, update_modified=True, notify=False, commit=False):
 		"""Set a value in the document object, update the timestamp and update the database.
 
