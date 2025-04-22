@@ -11,6 +11,7 @@
   "title",
   "status",
   "priority",
+  "custom_is_check",
   "column_break_2",
   "color",
   "date",
