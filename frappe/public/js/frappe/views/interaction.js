@@ -77,6 +77,11 @@ frappe.views.InteractionComposer = class InteractionComposer {
 			},
 			{ label: __("Public"), fieldtype: "Check", fieldname: "public", default: "0" },
 			{ fieldtype: "Column Break" },
+			{
+				label: __("Title"),
+				fieldtype: "Data",
+				fieldname: "title"
+			},
 			{ label: __("Date"), fieldtype: "Datetime", fieldname: "due_date" },
 			{
 				label: __("Assigned To"),
@@ -347,7 +352,6 @@ function get_doc_mappings() {
 				category: "event_category",
 				due_date: "starts_on",
 				public: "event_type",
-				custom_follow_up_type: "custom_follow_up_type",
 			},
 			reqd_fields: ["summary", "due_date"],
 			hidden_fields: [],
@@ -360,6 +364,7 @@ function get_doc_mappings() {
 				reference_doctype: "reference_type",
 				reference_document: "reference_name",
 				assigned_to: "allocated_to",
+				title: "title",
 				follow_up_type: "follow_up_type",
 			},
 			reqd_fields: ["description"],

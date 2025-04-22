@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "description_and_status",
+  "title",
   "status",
   "priority",
   "column_break_2",
@@ -32,6 +33,11 @@
    "fieldname": "description_and_status",
    "fieldtype": "Section Break"
   },
+  {
+    "fieldname": "title",
+    "fieldtype": "Data",
+    "label": "Title"  
+    },
   {
    "default": "Open",
    "fieldname": "status",
