@@ -59,6 +59,12 @@
    "oldfieldtype": "Data",
    "options": "High\nMedium\nLow"
   },
+  {
+    "fieldname": "custom_is_check",
+    "fieldtype": "Check",
+    "label": "Is Check",
+    "hidden": 0
+    },
     {
      "fieldname": "follow_up_type",
      "fieldtype": "Link",
