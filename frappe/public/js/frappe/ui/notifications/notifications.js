@@ -289,6 +289,35 @@ class NotificationsView extends BaseNotificationsView {
 		item_html.on("click", () => {
 			!notification_log.read && this.mark_as_read(notification_log.name, item_html);
 			this.notifications_icon.trigger("click");
+			if (notification_log.document_type === "ToDo" && notification_log.document_name) {
+				frappe.call({
+				  method: "frappe.client.get",
+				  args: {
+					doctype: "ToDo",
+					name: notification_log.document_name,
+				  },
+				  callback: (res) => {
+					if (res.message) {
+					  frappe.call({
+						method: "frappe.client.set_value",
+						args: {
+						  doctype: "ToDo",
+						  name: notification_log.document_name,
+						  fieldname: "custom_is_check",
+						  value: 1
+						},
+						callback: (update_res) => {
+						  if (update_res.message) {
+				   
+							item_html.remove();
+						  
+						  }
+						}
+					  });
+					}
+				  },
+				});
+			  }
 		});
 
 		return item_html;
