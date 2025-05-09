@@ -51,7 +51,7 @@ from .utils.jinja import (
 )
 from .utils.lazy_loader import lazy_import
 
-__version__ = "15.66.0"
+__version__ = "15.68.0"
 __title__ = "Frappe Framework"
 
 # This if block is never executed when running the code. It is only used for
@@ -313,6 +313,9 @@ def connect_replica() -> bool:
 	# swap db connections
 	local.primary_db = local.db
 	local.db = local.replica_db
+
+	if hasattr(frappe.local, "_recorder"):
+		frappe.local._recorder._patch_sql(local.db)
 
 	return True
 
