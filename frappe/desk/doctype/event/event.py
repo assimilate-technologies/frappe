@@ -3,9 +3,10 @@
 
 
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 import frappe
+import frappe.share
 from frappe import _
 from frappe.contacts.doctype.contact.contact import get_default_contact
 from frappe.desk.doctype.notification_settings.notification_settings import (
@@ -230,7 +231,10 @@ def delete_communication(event, reference_doctype, reference_docname):
 def get_permission_query_conditions(user):
 	if not user:
 		user = frappe.session.user
-	return f"""(`tabEvent`.`event_type`='Public' or `tabEvent`.`owner`={frappe.db.escape(user)})"""
+	query = f"""(`tabEvent`.`event_type`='Public' or `tabEvent`.`owner`={frappe.db.escape(user)})"""
+	if shared_events := frappe.share.get_shared("Event", user=user):
+		query += f" or `tabEvent`.`name` in ({', '.join([frappe.db.escape(e) for e in shared_events])})"
+	return query
 
 
 def has_permission(doc, user):
@@ -241,7 +245,7 @@ def has_permission(doc, user):
 
 
 def send_event_digest():
-	today = nowdate()
+	today = getdate()
 
 	# select only those users that have event reminder email notifications enabled
 	users = [
