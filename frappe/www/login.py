@@ -20,7 +20,37 @@ from frappe.utils.password import get_decrypted_password
 from frappe.website.utils import get_home_page
 
 no_cache = True
+website_login_logo = ""
+company_logo = ""
+footer_powered = ""
 
+def get_website_login_logo():
+	website_login_logo =  frappe.db.get_single_value(
+		"Website Settings", "website_login_logo", cache=True
+	)
+
+	if not website_login_logo:
+		return website_login_logo
+	return website_login_logo
+
+def get_company_logo():
+	company_logo = frappe.get_website_settings("company_logo") or frappe.db.get_single_value(
+		"Website Settings", "company_logo", cache=True
+	)
+
+	if not company_logo:
+		return company_logo
+
+	return company_logo
+
+def get_footer_powered():
+	footer_powered =  frappe.db.get_single_value(
+		"Website Settings", "footer_powered", cache=True
+	)
+
+	if not footer_powered:
+		return footer_powered
+	return footer_powered
 
 def get_context(context):
 	from frappe.integrations.frappe_providers.frappecloud_billing import get_site_login_url
@@ -49,6 +79,9 @@ def get_context(context):
 	context["show_footer_on_login"] = cint(frappe.get_website_settings("show_footer_on_login"))
 	context["disable_user_pass_login"] = cint(frappe.get_system_settings("disable_user_pass_login"))
 	context["logo"] = get_app_logo()
+	context["website_login_logo"] = get_website_login_logo()
+	context["company_logo"] = get_company_logo()
+	context["footer_powered"] = get_footer_powered()
 	context["app_name"] = (
 		frappe.get_website_settings("app_name") or frappe.get_system_settings("app_name") or _("Frappe")
 	)

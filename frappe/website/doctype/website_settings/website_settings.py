@@ -19,9 +19,7 @@ class WebsiteSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 		from frappe.website.doctype.top_bar_item.top_bar_item import TopBarItem
-		from frappe.website.doctype.website_route_redirect.website_route_redirect import (
-			WebsiteRouteRedirect,
-		)
+		from frappe.website.doctype.website_route_redirect.website_route_redirect import WebsiteRouteRedirect
 
 		address: DF.SmallText | None
 		app_logo: DF.AttachImage | None
@@ -32,6 +30,7 @@ class WebsiteSettings(Document):
 		brand_html: DF.Code | None
 		call_to_action: DF.Data | None
 		call_to_action_url: DF.Data | None
+		company_logo: DF.Attach | None
 		copyright: DF.Data | None
 		disable_signup: DF.Check
 		enable_google_indexing: DF.Check
@@ -62,6 +61,7 @@ class WebsiteSettings(Document):
 		subdomain: DF.SmallText | None
 		title_prefix: DF.Data | None
 		top_bar_items: DF.Table[TopBarItem]
+		website_login_logo: DF.Attach | None
 		website_theme: DF.Link | None
 		website_theme_image_link: DF.Code | None
 	# end: auto-generated types
