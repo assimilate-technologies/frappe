@@ -632,6 +632,10 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 	render_list() {
 		// clear rows
 		this.$result.find(".list-row-container").remove();
+		this.parent.page.main.parent().addClass("list-view");
+		if (this.list_view_settings?.disable_scrolling && !frappe.is_mobile()) {
+			this.parent.page.main.parent().addClass("disable-scrolling");
+		}
 		this.render_header();
 
 		let has_assignto = false;
@@ -783,8 +787,13 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 
 	get_left_html(doc) {
 		let left_html = "";
+		let has_value_in_second_column = true;
 		for (let i = 0; i < this.columns.length; i++) {
 			let col = this.columns[i];
+
+			if (i == 4 && !doc[col.df.fieldname] && doc[col.df.fieldname] != 0) {
+				has_value_in_second_column = false;
+			}
 
 			if (frappe.is_mobile() && col.type == "Field" && [3, 4].includes(i)) {
 				left_html += `<div class="mobile-layout">${this.get_column_html(
@@ -795,6 +804,17 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			} else {
 				left_html += this.get_column_html(col, doc, false);
 			}
+		}
+
+		if (!has_value_in_second_column) {
+			const container = document.createElement("div");
+			container.innerHTML = left_html;
+			const firstMobileLayout = container.querySelector(".mobile-layout");
+
+			if (firstMobileLayout) {
+				firstMobileLayout.classList.add("no-seperator");
+			}
+			left_html = container.innerHTML;
 		}
 
 		left_html += this.generate_button_html(doc);
@@ -912,18 +932,14 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 				</span>`;
 			} else if (df.fieldtype === "Link") {
 				html = `<a class="filterable ellipsis"
-					data-filter="${fieldname},=,${value}">
-					${_value}
-				</a>`;
+					data-filter="${fieldname},=,${value}">${_value}</a>`;
 			} else if (frappe.model.html_fieldtypes.includes(df.fieldtype)) {
 				html = `<span class="ellipsis">
 					${_value}
 				</span>`;
 			} else {
 				html = `<a class="filterable ellipsis"
-					data-filter="${fieldname},=,${frappe.utils.escape_html(value)}">
-					${format()}
-				</a>`;
+					data-filter="${fieldname},=,${frappe.utils.escape_html(value)}">${format()}</a>`;
 			}
 
 			return `<span class="ellipsis"
@@ -993,8 +1009,9 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 	 * The width for each column is applied as both a fixed `width` and a flexible `flex` property.
 	 */
 	apply_column_widths() {
+		if (this.list_view_settings?.disable_scrolling) return;
 		Object.entries(this.column_max_widths).forEach(([fieldname, width]) => {
-			$(`.${fieldname}`).css({
+			$(`.list-view .frappe-list .result .level-left .list-row-col.${fieldname}`).css({
 				width: width,
 				flex: `1 0 ${width}px`,
 			});
