@@ -482,7 +482,9 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 
 	get_documentation_link() {
 		if (this.meta.documentation) {
-			return `<a href="${this.meta.documentation}" target="blank" class="meta-description small text-muted">Need Help?</a>`;
+			return `<a href="${
+				this.meta.documentation
+			}" target="blank" class="meta-description small text-muted">${__("Need Help?")}</a>`;
 		}
 		return "";
 	}
@@ -922,6 +924,11 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 				_value = _value * out_of_ratings;
 			}
 
+			let masked_fields = frappe.get_meta(this.doctype).masked_fields || [];
+			let is_masked = masked_fields.includes(df.fieldname);
+
+			let filterable = is_masked ? "no-underline" : " filterable";
+
 			if (df.fieldtype === "Image") {
 				html = df.options
 					? `<img src="${doc[df.options]}"
@@ -930,22 +937,26 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 						${frappe.utils.icon("restriction")}
 					</div>`;
 			} else if (df.fieldtype === "Select") {
-				html = `<span class="filterable indicator-pill ${frappe.utils.guess_colour(
+				html = `<span class="${filterable} indicator-pill ${frappe.utils.guess_colour(
 					_value
 				)} ellipsis"
 					data-filter="${fieldname},=,${value}">
 					<span class="ellipsis"> ${__(_value)} </span>
 				</span>`;
 			} else if (df.fieldtype === "Link") {
-				html = `<a class="filterable ellipsis"
-					data-filter="${fieldname},=,${value}">${_value}</a>`;
+				html = `<a class="${filterable} ellipsis "
+					data-filter="${fieldname},=,${value}">
+					${_value}
+				</a>`;
 			} else if (frappe.model.html_fieldtypes.includes(df.fieldtype)) {
 				html = `<span class="ellipsis">
 					${_value}
 				</span>`;
 			} else {
-				html = `<a class="filterable ellipsis"
-					data-filter="${fieldname},=,${frappe.utils.escape_html(value)}">${format()}</a>`;
+				html = `<a class="${filterable} ellipsis"
+					data-filter="${fieldname},=,${frappe.utils.escape_html(value)}">
+					${format()}
+				</a>`;
 			}
 
 			return `<span class="ellipsis"
@@ -1744,12 +1755,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 				// in the listview according to filters applied
 				// let's remove it manually
 				this.data = this.data.filter((d) => !names.includes(d.name));
-				for (let name of names) {
-					this.$result
-						.find(`.list-row-checkbox[data-name='${name.replace(/'/g, "\\'")}']`)
-						.closest(".list-row-container")
-						.remove();
-				}
+				this.remove_list_items(names);
 				return;
 			}
 
@@ -1802,6 +1808,15 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			return true;
 		}
 		return false;
+	}
+
+	remove_list_items(names) {
+		for (let name of names) {
+			this.$result
+				.find(`.list-row-checkbox[data-name='${name.replace(/'/g, "\\'")}']`)
+				.closest(".list-row-container")
+				.remove();
+		}
 	}
 
 	set_rows_as_checked() {
@@ -2338,7 +2353,12 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			let doctype = null;
 
 			let value_array;
-			if ($.isArray(value) && value[0].startsWith("[") && value[0].endsWith("]")) {
+			if (
+				Array.isArray(value) &&
+				!Array.isArray(value[0]) &&
+				value[0].startsWith("[") &&
+				value[0].endsWith("]")
+			) {
 				value_array = [];
 				for (var i = 0; i < value.length; i++) {
 					value_array.push(JSON.parse(value[i]));
@@ -2365,13 +2385,17 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			if (doctype) {
 				if (value_array) {
 					for (var j = 0; j < value_array.length; j++) {
-						if ($.isArray(value_array[j])) {
+						if (Array.isArray(value_array[j])) {
 							filters.push([doctype, field, value_array[j][0], value_array[j][1]]);
 						} else {
 							filters.push([doctype, field, "=", value_array[j]]);
 						}
 					}
-				} else if ($.isArray(value)) {
+				} else if (Array.isArray(value) && Array.isArray(value[0])) {
+					value.forEach((val) => {
+						filters.push([doctype, field, val[0], val[1]]);
+					});
+				} else if (Array.isArray(value)) {
 					filters.push([doctype, field, value[0], value[1]]);
 				} else {
 					filters.push([doctype, field, "=", value]);
