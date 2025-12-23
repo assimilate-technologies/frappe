@@ -110,9 +110,12 @@ class HTTPRequest:
 		)
 
 		# Check if the referrer or origin is in the allowed list
-		return (referrer and any(referrer.startswith(allowed) for allowed in allowed_referrers)) or (
-			origin and any(origin == allowed for allowed in allowed_referrers)
-		)
+		if referrer:
+			referrer_parsed = urlparse(referrer)
+			if any(referrer_parsed.netloc == urlparse(allowed).netloc for allowed in allowed_referrers):
+				return True
+
+		return origin in allowed_referrers if origin else False
 
 
 class LoginManager:
@@ -198,7 +201,7 @@ class LoginManager:
 			frappe.local.cookie_manager.set_cookie("system_user", "yes", deduplicate=True)
 			if not resume:
 				frappe.local.response["message"] = "Logged In"
-				frappe.local.response["home_page"] = get_default_path() or "/app"
+				frappe.local.response["home_page"] = get_default_path() or "/desk"
 
 		if not resume:
 			frappe.response["full_name"] = self.full_name

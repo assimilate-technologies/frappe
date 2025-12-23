@@ -100,7 +100,7 @@ def get_communication_doctype(doctype, txt, searchfield, start, page_len, filter
 	results = []
 	txt_lower = txt.lower().replace("%", "")
 
-	for dt in com_doctypes:
+	for dt in list(set(com_doctypes)):
 		if dt in can_read:
 			if txt_lower in dt.lower() or txt_lower in _(dt).lower():
 				results.append([dt])
@@ -239,4 +239,8 @@ def sendmail(
 	)
 
 	# build email queue and send the email if send_now is True.
-	return builder.process(send_now=now)
+
+	q = builder.process(send_now=False)
+	if now:
+		frappe.db.after_commit.add(q.send)
+	return q
