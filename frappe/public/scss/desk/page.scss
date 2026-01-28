@@ -35,7 +35,6 @@
 
 	.title-area {
 		display: inline-flex;
-		align-items: center;
 		.indicator-pill {
 			margin-left: var(--margin-sm);
 		}
@@ -119,6 +118,7 @@ body[data-route^="Form"] {
 	.page-head-content {
 		height: var(--page-head-height);
 		padding: 8px 0px;
+		gap: 10px;
 	}
 }
 

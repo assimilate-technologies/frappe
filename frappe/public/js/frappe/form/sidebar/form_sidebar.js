@@ -15,7 +15,9 @@ frappe.ui.form.Sidebar = class {
 		var sidebar_content = frappe.render_template("form_sidebar", {
 			doctype: this.frm.doctype,
 			frm: this.frm,
-			can_write: frappe.model.can_write(this.frm.doctype, this.frm.docname),
+			can_write:
+				frappe.model.can_write(this.frm.doctype, this.frm.docname) &&
+				!this.frm.fields_dict[this.frm.meta.image_field]?.df.read_only,
 			image_field: this.frm.meta.image_field ?? false,
 		});
 
@@ -35,14 +37,11 @@ frappe.ui.form.Sidebar = class {
 		this.setup_keyboard_shortcuts();
 		this.show_auto_repeat_status();
 		frappe.ui.form.setup_user_image_event(this.frm);
-		this.indicator = $(this.sidebar).find(".sidebar-meta-details .indicator-pill");
 		this.setup_copy_event();
 		this.make_like();
+		this.setup_print();
+		this.setup_editable_title();
 		this.refresh();
-
-		// setup editable title
-		let form_sidebar_text = $(this.sidebar).find(".sidebar-meta-details .form-title-text");
-		this.toolbar.setup_editable_title(form_sidebar_text);
 	}
 
 	setup_keyboard_shortcuts() {
@@ -77,6 +76,39 @@ frappe.ui.form.Sidebar = class {
 			.on("click", (e) => {
 				frappe.utils.copy_to_clipboard($(e.currentTarget).attr("data-copy"));
 			});
+	}
+
+	setup_editable_title() {
+		// setup editable title
+		let form_sidebar_text = $(this.sidebar).find(".form-stats-likes .form-title-text");
+		this.toolbar.setup_editable_title(form_sidebar_text);
+	}
+
+	setup_print() {
+		const print_settings = frappe.model.get_doc(":Print Settings", "Print Settings");
+		const allow_print_for_draft = cint(print_settings.allow_print_for_draft);
+		const allow_print_for_cancelled = cint(print_settings.allow_print_for_cancelled);
+
+		if (
+			!frappe.model.is_submittable(this.frm.doc.doctype) ||
+			this.frm.doc.docstatus == 1 ||
+			(allow_print_for_cancelled && this.frm.doc.docstatus == 2) ||
+			(allow_print_for_draft && this.frm.doc.docstatus == 0)
+		) {
+			if (frappe.model.can_print(null, this.frm) && !this.frm.meta.issingle) {
+				let print_icon = this.page.add_action_icon(
+					"printer",
+					() => {
+						this.frm.print_doc();
+					},
+					"",
+					__("Print")
+				);
+				print_icon.css("background-color", "transparent");
+				print_icon.addClass("p-0");
+				this.sidebar.find(".form-print").append(print_icon);
+			}
+		}
 	}
 
 	make_like() {
@@ -127,10 +159,10 @@ frappe.ui.form.Sidebar = class {
 			.html(
 				get_user_message(
 					this.frm.doc.modified_by,
-					__("You last edited this", null),
-					__("{0} last edited this", [get_user_link(this.frm.doc.modified_by)])
+					__("Last Edited by You", null),
+					__("Last Edited by {0}", [get_user_link(this.frm.doc.modified_by)])
 				) +
-					" · " +
+					" <br> " +
 					comment_when(this.frm.doc.modified)
 			);
 		this.sidebar
@@ -138,10 +170,10 @@ frappe.ui.form.Sidebar = class {
 			.html(
 				get_user_message(
 					this.frm.doc.owner,
-					__("You created this", null),
-					__("{0} created this", [get_user_link(this.frm.doc.owner)])
+					__("Created By You", null),
+					__("Created By {0}", [get_user_link(this.frm.doc.owner)])
 				) +
-					" · " +
+					" <br> " +
 					comment_when(this.frm.doc.creation)
 			);
 	}
