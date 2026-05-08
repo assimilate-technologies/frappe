@@ -44,6 +44,7 @@ def clean_html(html):
 			"tbody",
 			"td",
 			"tr",
+			"a",
 		},
 		clean_content_tags=REMOVE_CONTENT_TAGS,
 		strip_comments=True,
@@ -142,7 +143,7 @@ def clean_script_and_style(html):
 	return frappe.as_unicode(soup)
 
 
-def sanitize_html(html, linkify=False, always_sanitize=False):
+def sanitize_html(html, linkify=False, always_sanitize=False, disallowed_tags=None):
 	"""
 	Sanitize HTML tags, attributes and style to prevent XSS attacks
 	Based on nh3 clean, bleach whitelist and html5lib's Sanitizer defaults
@@ -167,9 +168,16 @@ def sanitize_html(html, linkify=False, always_sanitize=False):
 		.union(["html", "head", "meta", "link", "body", "o:p"])
 	)
 
+	# Allow caller to explicitly disallow some tags
+	if disallowed_tags:
+		if disallowed_tags == "*":
+			tags = set()
+		else:
+			tags.difference_update(disallowed_tags)
+
 	attributes = {"*": acceptable_attributes, "svg": svg_attributes}
 
-	# returns html with escaped tags, escaped orphan >, <, etc.
+	# returns sanitized HTML with unsafe tags and attributes removed
 	escaped_html = nh3.clean(
 		html,
 		tags=tags,
