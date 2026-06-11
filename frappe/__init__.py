@@ -51,7 +51,7 @@ from .utils.jinja import (
 )
 from .utils.lazy_loader import lazy_import
 
-__version__ = "15.110.0"
+__version__ = "15.111.1"
 __title__ = "Frappe Framework"
 
 # This if block is never executed when running the code. It is only used for
@@ -244,7 +244,8 @@ def init(site: str, sites_path: str = ".", new_site: bool = False, force=False) 
 	local.valid_columns = {}
 	local.new_doc_templates = {}
 
-	local.jenv = None
+	local.jenv_restricted = None
+	local.jenv_unrestricted = None
 	local.jloader = None
 	local.cache = {}
 	local.form_dict = _dict()
@@ -646,7 +647,8 @@ def set_user(username: str):
 	local.session.sid = username
 	local.cache = {}
 	local.form_dict = _dict()
-	local.jenv = None
+	local.jenv_restricted = None
+	local.jenv_unrestricted = None
 	local.session.data = _dict()
 	local.role_permissions = {}
 	local.new_doc_templates = {}
