@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Run against postgres too only when roulette decides it's needed
+        # Always run against postgres too -- it is a supported backend (see roulette.py).
         db: ${{ fromJson(needs.checkrun.outputs.run_postgres == 'true' && '["mariadb", "postgres"]' || '["mariadb"]') }}
         index: [1, 2]
     services:
@@ -236,7 +236,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8.0.1
       - name: Upload coverage data
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           name: Server
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -1304,9 +1304,23 @@ class Database:
 			self.value_cache[dt][cache_key] = count
 		return count
 
-	def estimate_count(self, doctype: str) -> int:
-		"""Get estimated count of total rows in a table."""
+	def _estimate_count(self, table: str) -> int:
+		"""Get estimated count of total rows in a single table. Override in subclasses."""
 		raise NotImplementedError
+
+	def estimate_count(self, doctype: str) -> int:
+		"""Get estimated count of total rows in a table.
+
+		The estimate is read one table at a time and cached in Redis with a 60-minute TTL
+		to avoid hammering information_schema.
+		"""
+		table = get_table_name(doctype)
+		cache_key = f"estimate_count::{table}"
+		count = frappe.cache.get_value(cache_key)
+		if count is None:
+			count = self._estimate_count(table)
+			frappe.cache.set_value(cache_key, count, expires_in_sec=60 * 60)
+		return count
 
 	@staticmethod
 	def format_date(date):
@@ -1511,6 +1525,11 @@ class Database:
 		value_iterator = iter(values)
 		while value_chunk := tuple(itertools.islice(value_iterator, chunk_size)):
 			query.insert(*value_chunk).run()
+
+	def create_sequence_table(self):
+		# MariaDB/Postgres have native sequences and need no backing table;
+		# SQLite overrides this to create its emulation table at site setup.
+		pass
 
 	def create_sequence(self, *args, **kwargs):
 		from frappe.database.sequence import create_sequence
