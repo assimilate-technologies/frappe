@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: developers@frappe.io\n"
 "POT-Creation-Date: 2026-01-02 22:45+0000\n"
-"PO-Revision-Date: 2026-04-11 10:20\n"
+"PO-Revision-Date: 2026-06-20 19:02\n"
 "Last-Translator: developers@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -275,7 +275,7 @@ msgstr "<b>{0}</b> är inte giltig URL"
 #. Content of the 'Help' (HTML) field in DocType 'Property Setter'
 #: frappe/custom/doctype/property_setter/property_setter.json
 msgid "<div class=\"alert\">Please don't update it as it can mess up your form. Use the Customize Form View and Custom Fields to set properties!</div>"
-msgstr "<div class=\"alert\">Vänligen uppdatera inte det eftersom det kan förstöra ditt formulär. Använd Anpassa Formulär och anpassa Fält och ange egenskaper!</div>"
+msgstr "<div class=\"alert\">Uppdatera inte eftersom det kan förstöra formulär. Använd Anpassa Formulär Vy och Anpassa Fält och ange egenskaper!</div>"
 
 #. Introduction text of the request-data Web Form
 #: frappe/website/web_form/request_data/request_data.json
@@ -583,7 +583,7 @@ msgstr "<h4>E-post Svar Exempel</h4>\n\n"
 "- Belopp: {{ grand_total }}\n"
 "</pre>\n\n"
 "<h4>Hur hämtas fältnamn</h4>\n\n"
-"<p>Fältnamn som kan använda i e-post mall är fält i dokument som du skickar e-post meddelande från. Ta reda på fält namn för alla dokument via Inställningar &gt; Anpassa formulär vy och välja dokument typ (t.ex. Försäljning Faktura)</p>\n\n"
+"<p>Fältnamn som kan använda i e-post mall är fält i dokument som du skickar e-post meddelande från. Ta reda på fält namn för alla dokument via Inställningar &gt; Anpassa Formulär Vy och välja dokument typ (t.ex. Försäljning Faktura)</p>\n\n"
 "<h4>Mallar</h4>\n\n"
 "<p>Mallar kompileras med Jinja Templating Language. För att lära dig mer om Jinja, <a class=\"strong\" href=\"http://jinja.pocoo.org/docs/dev/templates/\">läs denna dokumentation.</a></p>\n"
 
@@ -766,7 +766,7 @@ msgstr "<span class=\"h4\"><b>Genvägar</b></span>"
 #. Header text in the Build Workspace
 #: frappe/core/workspace/build/build.json
 msgid "<span style=\"font-size: 18px; letter-spacing: 0.18px;\"><b>Components to build your app</b></span>"
-msgstr "<span style=\"font-size: 18px; letter-spacing: 0.18px;\"><b>Komponenter för att skapa app</b></span>"
+msgstr "<span style=\"font-size: 18px; letter-spacing: 0.18px;\"><b>App Komponenter</b></span>"
 
 #. Header text in the Build Workspace
 #: frappe/core/workspace/build/build.json
@@ -2191,7 +2191,7 @@ msgstr "Tillåter användare att visa dokument."
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:82
 msgid "Allows users to enable the mask property for any field of the respective doctype."
-msgstr "Tillåter användare att aktivera mask egenskap för vilket fält som helst i respektive doctype."
+msgstr "Tillåter användare att aktivera dold egenskap för vilket fält som helst i respektive doctype."
 
 #: frappe/core/doctype/user/user.py:981
 msgid "Already Registered"
@@ -2255,7 +2255,7 @@ msgstr "Ändra Nummer Serie Sekvens"
 #. Name of a DocType
 #: frappe/core/doctype/amended_document_naming_settings/amended_document_naming_settings.json
 msgid "Amended Document Naming Settings"
-msgstr "Ändrade Dokument Namn Inställningar"
+msgstr "Ändrade Dokument Namngivning Inställningar"
 
 #. Label of a Section Break field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
@@ -2285,7 +2285,7 @@ msgstr "Ändring Ej Tillåten"
 
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.py:207
 msgid "Amendment naming rules updated."
-msgstr "Ändring av Nummer Serie uppdaterad."
+msgstr "Ändring av Namngivning Serie uppdaterad."
 
 #. Success message of the request-to-delete-data Web Form
 #: frappe/website/web_form/request_to_delete_data/request_to_delete_data.json
@@ -2354,7 +2354,7 @@ msgstr "Alla strängbaserade skrivarspråk kan användas. Att skriva rå kommand
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:103
 msgid "Apart from System Manager, roles with Set User Permissions right can set permissions for other users for that Document Type."
-msgstr "Förutom System Ansvarig kan roller med  Ange användarbehörighet rättigheten ange behörigheter för andra användare för detta DocType."
+msgstr "Förutom System Ansvarig kan roller med Ange Användare Behörighet rättigheten ange behörigheter för andra användare för detta DocType."
 
 #. Label of a Tab Break field in DocType 'System Settings'
 #. Label of a Section Break field in DocType 'User'
@@ -2509,7 +2509,7 @@ msgstr "Tillämpa Endast En Gång"
 #. Label of a Check field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Apply Strict User Permissions"
-msgstr "Tillämpa Strikta Användar Behörigheter"
+msgstr "Tillämpa Strikta Användare Behörigheter"
 
 #. Label of a Select field in DocType 'Client Script'
 #: frappe/custom/doctype/client_script/client_script.json
@@ -2524,7 +2524,7 @@ msgstr "Tillämpa på Alla Dokument Typer"
 #. Label of a Link field in DocType 'User Type'
 #: frappe/core/doctype/user_type/user_type.json
 msgid "Apply User Permission On"
-msgstr "Tillämpa Användar Behörighet på"
+msgstr "Tillämpa Användare Behörighet på"
 
 #. Description of the 'If user is the owner' (Check) field in DocType 'Custom
 #. DocPerm'
@@ -2683,7 +2683,7 @@ msgstr "Arial"
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:11
 msgid "As a best practice, do not assign the same set of permission rule to different Roles. Instead, set multiple Roles to the same User."
-msgstr "Som bästa praxis, tilldela inte samma behörighetsregler till olika roller. Istället tilldela flera roller till samma användare."
+msgstr "Som bästa praxis, tilldela inte samma behörighet regler till olika roller. Istället tilldela flera roller till samma användare."
 
 #: frappe/desk/form/assign_to.py:107
 msgid "As document sharing is disabled, please give them the required permissions before assigning."
@@ -3272,11 +3272,11 @@ msgstr "Avatar"
 #: frappe/public/js/frappe/form/controls/password.js:88
 #: frappe/public/js/frappe/ui/group_by/group_by.js:21
 msgid "Average"
-msgstr "Medel"
+msgstr "Medelvärde"
 
 #: frappe/public/js/frappe/ui/group_by/group_by.js:345
 msgid "Average of {0}"
-msgstr "Genomsnitt av {0}"
+msgstr "Medelvärde av {0}"
 
 #: frappe/utils/password_strength.py:124
 msgid "Avoid dates and years that are associated with you."
@@ -3522,12 +3522,12 @@ msgstr "Fel Cron Uttryck"
 #. Option for the 'Rounding Method' (Select) field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Banker's Rounding"
-msgstr "Bankens Avrundning"
+msgstr "Bank Avrundning"
 
 #. Option for the 'Rounding Method' (Select) field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Banker's Rounding (legacy)"
-msgstr "Bankens Avrundning (äldre system)"
+msgstr "Bank Avrundning (äldre system)"
 
 #. Label of a Section Break field in DocType 'Website Settings'
 #: frappe/website/doctype/website_settings/website_settings.json
@@ -4032,7 +4032,7 @@ msgstr "Skugg Knapp"
 #: frappe/core/doctype/doctype/doctype.json
 #: frappe/custom/doctype/customize_form/customize_form.json
 msgid "By \"Naming Series\" field"
-msgstr "Efter \"Nummer Serie\"."
+msgstr "Efter \"Namngivning Serie\""
 
 #: frappe/website/doctype/web_page/web_page.js:111
 #: frappe/website/doctype/web_page/web_page.js:118
@@ -4062,17 +4062,17 @@ msgstr "Efter skript"
 #. Label of a Check field in DocType 'User'
 #: frappe/core/doctype/user/user.json
 msgid "Bypass Restricted IP Address Check If Two Factor Auth Enabled"
-msgstr "Frångå begränsad IP Adress Kontroll om Två Faktor Autentisering är Aktiverad"
+msgstr "Ignorera begränsad IP Adress Kontroll om Två Faktor Autentisering är Aktiverad"
 
 #. Label of a Check field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Bypass Two Factor Auth for users who login from restricted IP Address"
-msgstr "Frångå Två Faktor Autentisering för Användare som loggar in från begränsad IP Adress"
+msgstr "Ignorera Två Faktor Autentisering för Användare som loggar in från begränsad IP Adress"
 
 #. Label of a Check field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Bypass restricted IP Address check If Two Factor Auth Enabled"
-msgstr "Frångå begränsad IP Adress kontroll om Två Faktor Autentisering är Aktiverad"
+msgstr "Ignorera begränsad IP Adress kontroll om Två Faktor Autentisering är Aktiverad"
 
 #. Option for the 'PDF Page Size' (Select) field in DocType 'Print Settings'
 #: frappe/printing/doctype/print_settings/print_settings.json
@@ -4252,7 +4252,7 @@ msgstr "Kan inte byta namn eftersom kolumn {0} redan finns under DocType."
 
 #: frappe/core/doctype/doctype/doctype.py:1128
 msgid "Can only change to/from Autoincrement naming rule when there is no data in the doctype"
-msgstr "Kan bara ändra till/från Autoincrement namngivningsregel när det inte finns några data i doctype"
+msgstr "Kan bara ändra till/från automatisk ökning i namngivning regel när det inte finns några data i doctype"
 
 #. Description of the 'Apply User Permission On' (Link) field in DocType 'User
 #. Type'
@@ -5582,9 +5582,9 @@ msgstr "Konfigurera kolumner för {0}"
 msgid "Configure how amended documents will be named.<br>\n\n"
 "Default behaviour is to follow an amend counter which adds a number to the end of the original name indicating the amended version. <br>\n\n"
 "Default Naming will make the amended document to behave same as new documents."
-msgstr "Konfigurera hur ändrade dokument ska namnges.\n\n"
-"Standard är att följa ändring sekvens som lägger till version nummer i slutet av ursprungliga namn.\n"
-"Standard Nummer Serie gör att ändrade dokument fungerar på samma sätt som nya dokument."
+msgstr "Konfigurera hur ändrade dokument ska namnges.<br>\n\n"
+"Standard är att följa ändring sekvens som lägger till nummer i slutet av ursprunglig namn som anger ändrad version. <br>\n\n"
+"Standard Namngivning Serie gör att ändrad dokument fungerar på samma sätt som ny dokument."
 
 #. Description of a DocType
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
@@ -6542,7 +6542,7 @@ msgstr "Anpassa Översikt Panel"
 #: frappe/custom/doctype/customize_form/customize_form.json
 #: frappe/public/js/frappe/views/kanban/kanban_view.js:356
 msgid "Customize Form"
-msgstr "Anpassa Formulär"
+msgstr "Anpassad Formulär"
 
 #: frappe/custom/doctype/customize_form/customize_form.js:100
 msgid "Customize Form - {0}"
@@ -6981,7 +6981,7 @@ msgstr "Standard Adress Mall kan inte tas bort"
 #. Label of a Select field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Default Amendment Naming"
-msgstr "Standard Ändring Namn"
+msgstr "Standard Ändrad Namngivning"
 
 #. Label of a Select field in DocType 'System Settings'
 #. Label of a Select field in DocType 'User'
@@ -7019,7 +7019,7 @@ msgstr "Standard Sidhuvud"
 #: frappe/core/doctype/amended_document_naming_settings/amended_document_naming_settings.json
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Default Naming"
-msgstr "Standard Nummer Serie"
+msgstr "Standard Namngivning Serie"
 
 #. Label of a Check field in DocType 'Email Account'
 #: frappe/email/doctype/email_account/email_account.json
@@ -7862,12 +7862,12 @@ msgstr "DocType Händelse"
 #. Name of a DocType
 #: frappe/custom/doctype/doctype_layout/doctype_layout.json
 msgid "DocType Layout"
-msgstr "DocType Layout"
+msgstr "DocType Utseende"
 
 #. Name of a DocType
 #: frappe/custom/doctype/doctype_layout_field/doctype_layout_field.json
 msgid "DocType Layout Field"
-msgstr "DocType Layout Fält"
+msgstr "DocType Utseende Fält"
 
 #. Name of a DocType
 #. Option for the 'Applied On' (Select) field in DocType 'Property Setter'
@@ -8050,17 +8050,17 @@ msgstr "Dokument Namn måste vara sträng"
 #. Name of a DocType
 #: frappe/core/doctype/document_naming_rule/document_naming_rule.json
 msgid "Document Naming Rule"
-msgstr "Dokument Namn Regel"
+msgstr "Dokument Namngivning Regel"
 
 #. Name of a DocType
 #: frappe/core/doctype/document_naming_rule_condition/document_naming_rule_condition.json
 msgid "Document Naming Rule Condition"
-msgstr "Dokument Namn Regel Villkor"
+msgstr "Dokument Namngivning Regel Villkor"
 
 #. Name of a DocType
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Document Naming Settings"
-msgstr "Dokument Namn Inställningar"
+msgstr "Dokument Namngivning Inställningar"
 
 #: frappe/model/document.py:371
 msgid "Document Queued"
@@ -8243,7 +8243,7 @@ msgstr "Dokument namn ändrad från {0} till {1}"
 
 #: frappe/public/js/frappe/form/toolbar.js:174
 msgid "Document renaming from {0} to {1} has been queued"
-msgstr "Dokument namn byte från {0} till {1} är i kö"
+msgstr "Dokument namn ändring från {0} till {1} är i kö"
 
 #: frappe/desk/doctype/dashboard_chart/dashboard_chart.py:387
 msgid "Document type is required to create a dashboard chart"
@@ -8615,7 +8615,7 @@ msgstr "ESC"
 #. Description of the Onboarding Step 'Setup Naming Series'
 #: frappe/custom/onboarding_step/naming_series/naming_series.json
 msgid "Each document created in ERPNext can have a unique ID generated for it, using a prefix defined for it. Though each document has some prefix pre-configured, you can further customize it using tools like Naming Series Tool and Document Naming Rule.\n"
-msgstr "Varje dokument skapad i System kan ha unikt ID genererad för det, med definierad prefix . Även om varje dokument har prefix förkonfigurerad, kan man anpassa det ytterligare med hjälp av verktyg som Nummer Serie Verktyg och Dokument Namn Regel.\n"
+msgstr "Varje dokument skapad i System kan ha unikt ID genererad för det, med definierad prefix. Även om varje dokument har prefix förkonfigurerad, kan man anpassa det ytterligare med hjälp av verktyg som Namnändring Serie Verktyg och Dokument Namngivning Regel.\n"
 
 #. Option for the 'Comment Type' (Select) field in DocType 'Comment'
 #: frappe/core/doctype/comment/comment.json
@@ -9885,12 +9885,12 @@ msgstr "Förfallo Tid för QR Kod Bild Sida"
 #: frappe/public/js/frappe/views/reports/query_report.js:1749
 #: frappe/public/js/frappe/views/reports/report_view.js:1630
 msgid "Export"
-msgstr "Export"
+msgstr "Exportera"
 
 #: frappe/public/js/frappe/list/list_view.js:2074
 msgctxt "Button in list view actions menu"
 msgid "Export"
-msgstr "Export"
+msgstr "Exportera"
 
 #: frappe/public/js/frappe/data_import/data_exporter.js:245
 msgid "Export 1 record"
@@ -12484,7 +12484,7 @@ msgstr "Idx"
 #. 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "If Apply Strict User Permission is checked and User Permission is defined for a DocType for a User, then all the documents where value of the link is blank, will not be shown to that User"
-msgstr "Om Använd Strikt Användar Behörighet är vald och Användar Behörighet är definierad för DocType för Användare, kommer inte alla dokument där länk värde är tomt att visas för Användare"
+msgstr "Om Använd Strikt Användare Behörighet är vald och Användare Behörighet är definierad för DocType för Användare, kommer inte alla dokument där länk värde är tomt att visas för Användare"
 
 #. Description of the 'Don't Override Status' (Check) field in DocType
 #. 'Workflow'
@@ -12628,7 +12628,7 @@ msgstr "Om villkor är uppfylld kommer Användare att belönas med poäng. t.ex.
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:83
 msgid "If the user enables the mask property for the phone number field, the value will be displayed in a masked format (e.g., 811XXXXXXX)."
-msgstr "Om användare aktiverar mask egenskap för telefonnummer fält visas värdet i ett maskerat format (t.ex. 811XXXXXXX)."
+msgstr "Om användare aktiverar dold egenskap för telefonnummer fält visas värdet i dold format (t.ex. 811XXXXXXX)."
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:63
 msgid "If the user has access to Employee and Report is enabled, they can view Employee-based reports."
@@ -12672,7 +12672,7 @@ msgstr "Om du uppdaterar, välj \"Skriv över\" annars kommer befintliga rader i
 
 #: frappe/core/doctype/data_export/exporter.py:188
 msgid "If you are uploading new records, \"Naming Series\" becomes mandatory, if present."
-msgstr "Om du laddar upp ny information, blir \"Nummer Serie\" obligatorisk, om det finns."
+msgstr "Om ny information laddas upp, \"Namngivning Serie\" blir erfordrad, om det finns."
 
 #: frappe/core/doctype/data_export/exporter.py:186
 msgid "If you are uploading new records, leave the \"name\" (ID) column blank."
@@ -12967,7 +12967,7 @@ msgstr "I Dagar"
 #. Description of the Onboarding Step 'Setup Limited Access for a User'
 #: frappe/custom/onboarding_step/role_permissions/role_permissions.json
 msgid "In ERPNext, you can add your Employees as Users, and give them restricted access. Tools like Role Permission and User Permission allow you to define rules which give restricted access to the user to masters and transactions."
-msgstr "I System kan du lägga till dina anställda som användare och ge dem begränsad åtkomst. Verktyg som Rollbehörighet och Användarbehörighet definierar regler som ger användare begränsad åtkomst till tabeller och transaktioner."
+msgstr "I System kan du lägga till dina anställda som användare och ge dem begränsad åtkomst. Verktyg som Roll Behörighet och Användare Behörighet definierar regler som ger användare begränsad åtkomst till tabeller och transaktioner."
 
 #. Label of a Check field in DocType 'DocField'
 #. Label of a Check field in DocType 'Customize Form Field'
@@ -13040,7 +13040,7 @@ msgstr "I Standard Filter"
 #. Description of the Onboarding Step 'Generate Custom Reports'
 #: frappe/custom/onboarding_step/report_builder/report_builder.json
 msgid "In each module, you will find a host of single-click reports, ranging from financial statements to sales and purchase analytics and stock tracking reports. If a required new report is not available out-of-the-box, you can create custom reports in ERPNext by pulling values from the same multiple ERPNext tables.\n"
-msgstr "I varje modul hittar du flera enkel klick rapporter, allt från bokslut till försäljning och inköp analyser och lager spårning rapporter. Om erfordrad rapport inte är tillgänglig direkt, kan du skapa anpassade rapporter i System genom att hämta värden från tabeller.\n"
+msgstr "I varje modul hittar du mängd rapporter med ett enda klick, allt från bokslut rapporter till försäljning och inköp statistik och lager rapporter. Om ny rapport som behövs inte är tillgänglig direkt kan du skapa anpassade rapporter i System genom att hämta värden från samma System tabeller.\n"
 
 #. Description of the 'Font Size' (Float) field in DocType 'Print Settings'
 #: frappe/printing/doctype/print_settings/print_settings.json
@@ -13536,7 +13536,7 @@ msgstr "Ogiltig E-post Server. Rätta till och försök igen."
 
 #: frappe/model/naming.py:102
 msgid "Invalid Naming Series: {}"
-msgstr "Ogiltig Nummer Serie: {}"
+msgstr "Ogiltig Namngivning Serie: {}"
 
 #: frappe/core/doctype/rq_job/rq_job.py:117
 #: frappe/core/doctype/rq_job/rq_job.py:126
@@ -13673,11 +13673,11 @@ msgstr "Ogiltig namn typ (heltal) för varchar namn kolumn"
 
 #: frappe/model/naming.py:55
 msgid "Invalid naming series {}: dot (.) missing"
-msgstr "Ogiltig nummer serie {}: punkt (.) saknas"
+msgstr "Ogiltig namngivning serie {}: punkt (.) saknas"
 
 #: frappe/model/naming.py:69
 msgid "Invalid naming series {}: dot (.) missing before the numeric placeholders. Kindly use a format like <b>ABCD.#####</b>."
-msgstr "Ogiltig namngivningsserie {}: punkt (.) saknas före numeriska platshållare. Använd format som <b>ABCD.#####.</b>."
+msgstr "Ogiltig namngivning serie {}: punkt (.) saknas före numeriska platshållare. Använd format som <b>ABCD.#####.</b>."
 
 #: frappe/core/doctype/data_import/importer.py:446
 msgid "Invalid or corrupted content for import"
@@ -14635,11 +14635,11 @@ msgstr "Senast Synkroniserad {0}"
 
 #: frappe/custom/doctype/customize_form/customize_form.js:194
 msgid "Layout Reset"
-msgstr "Återställ Layout"
+msgstr "Återställ Utseende"
 
 #: frappe/custom/doctype/customize_form/customize_form.js:186
 msgid "Layout will be reset to standard layout, are you sure you want to do this?"
-msgstr "Layout kommer att återställas till standard layout, är du säker på att du vill göra detta?"
+msgstr "Utseende kommer att återställas till standard utseende. Är du säker på att du vill göra detta?"
 
 #: frappe/desk/page/leaderboard/leaderboard.js:15
 #: frappe/desk/page/user_profile/user_profile_sidebar.html:55
@@ -15742,7 +15742,7 @@ msgstr "Marknadsföring Kampanj"
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:81
 msgid "Mask"
-msgstr "Mask"
+msgstr "Dold"
 
 #: frappe/desk/page/setup_wizard/install_fixtures.py:50
 msgid "Master"
@@ -16653,7 +16653,7 @@ msgid "Naming Options:\n"
 "<ol><li><b>field:[fieldname]</b> - By Field</li><li><b>autoincrement</b> - Uses Databases' Auto Increment feature</li><li><b>naming_series:</b> - By Naming Series (field called naming_series must be present)</li><li><b>Prompt</b> - Prompt user for a name</li><li><b>[series]</b> - Series by prefix (separated by a dot); for example PRE.#####</li>\n"
 "<li><b>format:EXAMPLE-{MM}morewords{fieldname1}-{fieldname2}-{#####}</b> - Replace all braced words (fieldnames, date words (DD, MM, YY), series) with their value. Outside braces, any characters can be used.</li></ol>"
 msgstr "Namngivning Alternativ:\n"
-"<ol><li><b>field:[fältnamn]</b> - Efter Fält</li><li><b>autoincrement</b> - Använd Databas funktion för automatisk inkrementering</li><li><b>naming_series:</b> - Efter namngivning serie (fält naming_series måste finnas)</li><li><b>Prompt</b> - Fråga</li><li><b>[series]</b> - Serier med prefix (separerade med punkt); till exempel PRE.#####</li>\n"
+"<ol><li><b>field:[fältnamn]</b> - Efter Fält</li><li><b>autoincrement</b> - Använd Databas funktion för automatisk ökning</li><li><b>naming_series:</b> - Efter namngivning serie (fält naming_series måste finnas)</li><li><b>Prompt</b> - Fråga</li><li><b>[series]</b> - Serier med prefix (separerade med punkt); till exempel PRE.#####</li>\n"
 "<li><b>format:EXAMPLE-{MM}morewords{fieldname1}-{fieldname2}-{#####}</b> - Ersätt alla ord inom parentes (fältnamn, datum ord (DD, MM, YY), serier) med deras värde. Utanför hakparenteser kan alla tecken användas.</li></ol>"
 
 #. Description of the 'Auto Name' (Data) field in DocType 'Customize Form'
@@ -16670,16 +16670,16 @@ msgstr "Namngivning Alternativ:\n"
 #: frappe/core/doctype/doctype/doctype.json
 #: frappe/custom/doctype/customize_form/customize_form.json
 msgid "Naming Rule"
-msgstr "Nummer Serie Regel"
+msgstr "Namngivning Serie Regel"
 
 #. Label of a Tab Break field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Naming Series"
-msgstr "Nummer Serie"
+msgstr "Namngivning Serie"
 
 #: frappe/model/naming.py:252
 msgid "Naming Series mandatory"
-msgstr "Nummer Serie erfodras"
+msgstr "Namngivning Serie erfodras"
 
 #. Option for the 'Type' (Select) field in DocType 'Web Template'
 #. Label of a Section Break field in DocType 'Website Settings'
@@ -18696,7 +18696,7 @@ msgstr "PUT"
 #: frappe/core/doctype/package_release/package_release.json
 #: frappe/core/workspace/build/build.json
 msgid "Package"
-msgstr "App"
+msgstr "Appar"
 
 #. Name of a DocType
 #. Label of a Link in the Build Workspace
@@ -20829,7 +20829,7 @@ msgstr "RQ Jobb"
 #. Name of a DocType
 #: frappe/core/doctype/rq_worker/rq_worker.json
 msgid "RQ Worker"
-msgstr "RQ Worker"
+msgstr "RQ Tjänst"
 
 #. Option for the 'Naming Rule' (Select) field in DocType 'DocType'
 #. Option for the 'Naming Rule' (Select) field in DocType 'Customize Form'
@@ -21911,7 +21911,7 @@ msgstr "Begärd Av"
 #: frappe/integrations/doctype/integration_request/integration_request.json
 #: frappe/website/web_form/request_data/request_data.json
 msgid "Request Data"
-msgstr "Begäran Data"
+msgstr "Begär Data"
 
 #. Label of a Data field in DocType 'Integration Request'
 #: frappe/integrations/doctype/integration_request/integration_request.json
@@ -22020,7 +22020,7 @@ msgstr "Återställ LDAP Lösenord"
 
 #: frappe/custom/doctype/customize_form/customize_form.js:128
 msgid "Reset Layout"
-msgstr "Återställ Layout"
+msgstr "Återställ Utseende"
 
 #: frappe/core/doctype/user/user.js:238
 msgid "Reset OTP Secret"
@@ -22612,7 +22612,7 @@ msgstr "Regler med högre prioritet nummer tillämpas först."
 #. Label of a Int field in DocType 'System Settings'
 #: frappe/core/doctype/system_settings/system_settings.json
 msgid "Run Jobs only Daily if Inactive For (Days)"
-msgstr "Kör Jobb Daglig endast om Inaktiv för (Dagar)"
+msgstr "Kör Jobb endast Dagligen om de har varit inaktiva i (Antal Dagar)"
 
 #. Description of the 'Enable Scheduled Jobs' (Check) field in DocType 'System
 #. Settings'
@@ -22974,7 +22974,7 @@ msgstr "Schemaläggare"
 #: frappe/core/doctype/scheduler_event/scheduler_event.json
 #: frappe/core/doctype/server_script/server_script.json
 msgid "Scheduler Event"
-msgstr "Schemaläggare Händelse"
+msgstr "Schemalagd Händelse"
 
 #: frappe/core/doctype/data_import/data_import.py:112
 msgid "Scheduler Inactive"
@@ -23279,7 +23279,7 @@ msgstr "Visning Tabell"
 #: frappe/website/doctype/web_form_field/web_form_field.json
 #: frappe/website/doctype/web_template_field/web_template_field.json
 msgid "Select"
-msgstr "Rullgardin Lista"
+msgstr "Välj"
 
 #: frappe/public/js/frappe/data_import/data_exporter.js:149
 #: frappe/public/js/frappe/form/controls/multicheck.js:167
@@ -24035,7 +24035,7 @@ msgstr "Ange gräns"
 #. DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Set Naming Series options on your transactions."
-msgstr "Ange Nummer Serie alternativ för transaktioner"
+msgstr "Ange Namngivning Serie alternativ för transaktioner."
 
 #. Label of a Password field in DocType 'User'
 #: frappe/core/doctype/user/user.json
@@ -24077,7 +24077,7 @@ msgstr "Ange Roll För"
 #: frappe/core/doctype/user/user.js:148
 #: frappe/core/page/permission_manager/permission_manager.js:72
 msgid "Set User Permissions"
-msgstr "Ange Användar Behörigheter"
+msgstr "Ange Användare Behörigheter"
 
 #. Label of a Small Text field in DocType 'Property Setter'
 #: frappe/custom/doctype/property_setter/property_setter.json
@@ -24250,7 +24250,7 @@ msgstr "Inställningar för att kontrollera blogg kategorier och interaktioner s
 #: frappe/public/js/frappe/ui/toolbar/search_utils.js:567
 #: frappe/website/workspace/website/website.json
 msgid "Setup"
-msgstr "Inställning"
+msgstr "Konfigurera"
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:94
 msgid "Setup > Customize Form"
@@ -24262,7 +24262,7 @@ msgstr "Inställningar > Användare"
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:100
 msgid "Setup > User Permissions"
-msgstr "Inställningar > Användar Behörigheter"
+msgstr "Inställningar > Användare Behörigheter"
 
 #. Title of an Onboarding Step
 #: frappe/custom/onboarding_step/workflows/workflows.json
@@ -24288,7 +24288,7 @@ msgstr "Ange Begränsad Åtkomst för Användare"
 #. Title of an Onboarding Step
 #: frappe/custom/onboarding_step/naming_series/naming_series.json
 msgid "Setup Naming Series"
-msgstr "Ange Nummer Serie"
+msgstr "Ange Namngivning Serie"
 
 #. Label of a Section Break field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
@@ -24335,7 +24335,7 @@ msgstr "Delad"
 
 #: frappe/desk/form/assign_to.py:132
 msgid "Shared with the following Users with Read access:{0}"
-msgstr "Delas med följande Användare med läsbehörighet: {0}"
+msgstr "Delas med följande Användare med Läs Behörighet: {0}"
 
 #. Option for the 'Address Type' (Select) field in DocType 'Address'
 #: frappe/contacts/doctype/address/address.json
@@ -26625,7 +26625,7 @@ msgstr "Användare kan importera nya poster eller uppdatera befintlig data för 
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:28
 msgid "The user can select a Customer in Sales Order but cannot open the Customer master."
-msgstr "Användare kan välja Kund i Försäljning Order men kan inte öppna Kund registret."
+msgstr "Användare kan välja Kund i Försäljning Order men kan inte öppna Kund Inställningar."
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:78
 msgid "The user can share document access with another user."
@@ -26835,7 +26835,7 @@ msgstr "Detta kan inte ångras"
 #: frappe/desk/doctype/number_card/number_card.js:484
 msgctxt "Number Card"
 msgid "This card is visible only to Administrator and System Managers by default. Set a DocType to share with users who have read access."
-msgstr "Detta kort är som standard endast synligt för Administratörer och System Ansvariga. Ange DocType som ska delas med användare som har läsbehörighet."
+msgstr "Detta kort är som standard endast synligt för Administratörer och System Ansvariga. Ange DocType som ska delas med användare som har läs behörighet."
 
 #. Description of the 'Is Public' (Check) field in DocType 'Number Card'
 #: frappe/desk/doctype/number_card/number_card.json
@@ -27917,7 +27917,7 @@ msgstr "Försök igen"
 #. Label of a Data field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Try a Naming Series"
-msgstr "Prova Nummer Serie"
+msgstr "Prova Namngivning Serie"
 
 #: frappe/printing/page/print/print.js:189
 #: frappe/printing/page/print/print.js:195
@@ -28153,12 +28153,12 @@ msgstr "Sluta Följa"
 #. Name of a DocType
 #: frappe/email/doctype/unhandled_email/unhandled_email.json
 msgid "Unhandled Email"
-msgstr "Ohanterad E-post"
+msgstr "E-post att Hantera"
 
 #. Label of a Int field in DocType 'System Health Report'
 #: frappe/desk/doctype/system_health_report/system_health_report.json
 msgid "Unhandled Emails"
-msgstr "Ohanterad E-post "
+msgstr "E-post att Hantera"
 
 #: frappe/public/js/frappe/views/workspace/workspace.js:601
 msgid "Unhide Workspace"
@@ -28291,7 +28291,7 @@ msgstr "Uppdatera"
 #. Label of a Button field in DocType 'Document Naming Settings'
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.json
 msgid "Update Amendment Naming"
-msgstr "Uppdatera Ändring Namn"
+msgstr "Uppdatera Ändrad Namngivning"
 
 #: frappe/public/js/frappe/views/workspace/workspace.js:641
 msgid "Update Details"
@@ -28408,7 +28408,7 @@ msgstr "Uppdaterar Standard Inställningar"
 
 #: frappe/core/doctype/document_naming_settings/document_naming_settings.js:59
 msgid "Updating naming series options"
-msgstr "Uppdaterar Nummer Serie Alternativ"
+msgstr "Uppdaterar Namngivning Serie Alternativ"
 
 #: frappe/public/js/frappe/form/toolbar.js:146
 msgid "Updating related fields..."
@@ -28798,7 +28798,7 @@ msgstr "Användare Behörigheter"
 
 #: frappe/core/page/permission_manager/permission_manager_help.html:99
 msgid "User Permissions are used to limit users to specific records."
-msgstr "Användarbehörigheter används för att begränsa användare till specifika poster."
+msgstr "Användare Behörigheter används för att begränsa användare till specifika poster."
 
 #: frappe/core/doctype/user_permission/user_permission_list.js:124
 msgid "User Permissions created sucessfully"
@@ -31658,7 +31658,7 @@ msgstr "gammal_överordnad"
 #. Option for the 'Doc Event' (Select) field in DocType 'Webhook'
 #: frappe/integrations/doctype/webhook/webhook.json
 msgid "on_cancel"
-msgstr "on_cancel"
+msgstr "på_avbryt"
 
 #. Option for the 'Doc Event' (Select) field in DocType 'Webhook'
 #: frappe/integrations/doctype/webhook/webhook.json
@@ -31673,7 +31673,7 @@ msgstr "på_godkänn"
 #. Option for the 'Doc Event' (Select) field in DocType 'Webhook'
 #: frappe/integrations/doctype/webhook/webhook.json
 msgid "on_trash"
-msgstr "på_papperskorg"
+msgstr "på_förkasta"
 
 #. Option for the 'Doc Event' (Select) field in DocType 'Webhook'
 #: frappe/integrations/doctype/webhook/webhook.json
